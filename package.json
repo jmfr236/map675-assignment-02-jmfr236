@@ -18,5 +18,6 @@
   "homepage": "https://github.com/jmfr236/map675-assignment-02-jmfr236#readme",
   "dependencies": {
     "chalk": "^4.1.2"
-  }
+  },
+  "type": "module"
 }
