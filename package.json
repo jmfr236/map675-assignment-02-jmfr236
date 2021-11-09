@@ -1,0 +1,22 @@
+{
+  "name": "map675-assignment-02-jmfr236",
+  "version": "1.0.0",
+  "description": "Module 2 Assignment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmfr236/map675-assignment-02-jmfr236.git"
+  },
+  "author": "Jessica Freeman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jmfr236/map675-assignment-02-jmfr236/issues"
+  },
+  "homepage": "https://github.com/jmfr236/map675-assignment-02-jmfr236#readme",
+  "dependencies": {
+    "chalk": "^4.1.2"
+  }
+}
