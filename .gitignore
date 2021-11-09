@@ -1,3 +1,6 @@
+# Ignore project-files folder
+project-files/
+
 # Logs
 logs
 *.log
