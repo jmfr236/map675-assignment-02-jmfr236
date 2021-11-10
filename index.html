@@ -20,6 +20,33 @@
       top: 0;
       bottom: 0;
     }
+
+    #ui {
+        position: absolute;
+        z-index: 1000; /* place above map */
+        bottom: 18px;
+        right: 18px;
+        padding: 6px 12px;
+        background: rgba(256,256,256,.9);
+    }
+
+    #ui ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    #ui li {
+        margin-bottom: 6px;
+    }
+    #ui a {
+        text-decoration: none;
+    }
+    #ui a:hover {
+        font-weight: bold;
+    }
+    .highlight {
+        font-weight: bold;
+    }
+
   </style>
 </head>
 
@@ -27,8 +54,15 @@
 
   <div id="map"></div>
 
+  <div id="ui">
+    <h3>Tourism Regions</h3>
+    <h4>(number of historic buildings)</h4>
+    <ul id="legend-list"></ul>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
   <script src="https://d3js.org/d3-fetch.v1.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
   <script>
 
@@ -59,6 +93,7 @@
 
     const regionsData = d3.json('data/ky_tourism_regions.json');
     const colorsData = d3.json('data/vividcolors.json');
+    const buildingData = d3.json('data/ky_historic_buildings.json')
 
     // use Promise to wait until data is all loaded
     Promise.all([regionsData, colorsData]).then(drawMap);
@@ -72,7 +107,16 @@
         // pull out separate data arrays and assign to variables
         const regions = data[0];
         const colors = data[1];
-        //const signalsGeojson = data[2];
+        const buildings = data[2];
+
+        // store a reference to the HTML list
+        const legendList = $('#legend-list');
+
+        // loop through the features and create a new
+        // list item for each feature in the legend
+        for(let i = 1; i <= regions.features.length; i++) {
+            legendList.append('<li class="legend-item" id="region-' + i + '"><a style="color:' + colors.Vivid[10][i -1] + '" href="#">Region ' + i + ' (<span></span>)</a></li>');
+        }
 
         // create a layerGroup with the geojson data
         const regionsLayer = L.geoJson(regions, {
