@@ -120,17 +120,41 @@
 
         // create a layerGroup with the geojson data
         const regionsLayer = L.geoJson(regions, {
-        style: function (feature) {
-            // use the colors object to style each polygon a unique color
-            return {
-            color: colors.Vivid[9][feature.properties.OBJECTID - 1],
-            fillOpacity: .6
-            }
-        }
-        }).addTo(map);
+          style: function (feature) {
+              // use the colors object to style each polygon a unique color
+              return {
+              color: colors.Vivid[9][feature.properties.OBJECTID - 1],
+              fillOpacity: .6
+              }
+          },
+          onEachFeature(feature, layer) {
+            // select each legend list item span and append the total count of signals
+            $('#region-' + feature.properties.OBJECTID + ' span').append(feature.properties.count);
 
-        // convert GeoJSON to Leaflet L.geoJson() object and add to the map
-       L.geoJson(regions).addTo(map);
+            //when mousing over a polygon layer
+            layer.on('mouseover', function () {
+              // provide a visual affordance
+              this.setStyle({
+                fillOpacity: .8
+              });
+
+              // select the cooresponding list item
+              // and add the highlight class to make bold
+              $('#region-' + feature.properties.OBJECTID).addClass('highlight');
+            })
+
+            //when mousing out a polygon layer
+            layer.on('mouseout', function () {
+              // provide a visual affordance
+              this.setStyle({
+                fillOpacity: .6
+              });
+
+              // remove highlight class
+              $('#region-' + feature.properties.OBJECTID).removeClass('highlight');
+            })
+          }
+        }).addTo(map);
     }
 
 
