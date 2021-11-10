@@ -1,0 +1,96 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>Lesson 02 template</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+  <script src="https://d3js.org/d3-fetch.v1.min.js"></script>
+
+  <script>
+
+      // set map style
+      const options = {
+        center: [38, -85.7],
+        zoom: 8,
+        minZoom: 8,
+        maxZoom: 10,
+        maxBounds: [
+          [39.44, -80.43],
+          [36.53, -90.97]
+        ],
+      };
+
+    // instantiate Leaflet map
+    const map = L.map('map', options);
+
+    // add CARTO voyager tiles with no labels
+    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+    }).addTo(map);
+
+    //d3.json('data/ky_tourism_regions.json').then ((data) => {
+    //    L.geoJson(data).addTo(map)
+    //});
+
+    const regionsData = d3.json('data/ky_tourism_regions.json');
+    const colorsData = d3.json('data/vividcolors.json');
+
+    // use Promise to wait until data is all loaded
+    Promise.all([regionsData, colorsData]).then(drawMap);
+
+    function drawMap(data) {
+        // function is called when Promise is fulfilled and data is ready
+
+        // inspect array of data if you wish
+        console.log(data);
+
+        // pull out separate data arrays and assign to variables
+        const regions = data[0];
+        const colors = data[1];
+        //const signalsGeojson = data[2];
+
+        // create a layerGroup with the geojson data
+        const regionsLayer = L.geoJson(regions, {
+        style: function (feature) {
+            // use the colors object to style each polygon a unique color
+            return {
+            color: colors.Vivid[9][feature.properties.OBJECTID - 1],
+            fillOpacity: .6
+            }
+        }
+        }).addTo(map);
+
+        // convert GeoJSON to Leaflet L.geoJson() object and add to the map
+       L.geoJson(regions).addTo(map);
+    }
+
+
+  </script>
+</body>
+
+</html>
