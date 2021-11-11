@@ -75,7 +75,7 @@
         center: [38, -85.7],
         zoom: 8,
         minZoom: 8,
-        maxZoom: 10,
+        maxZoom: 18,
         maxBounds: [
           [39.44, -80.43],
           [36.53, -90.97]
@@ -85,12 +85,23 @@
     // instantiate Leaflet map
     const map = L.map('map', options);
 
-    // add CARTO voyager tiles with no labels
-    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
-    }).addTo(map);
+    /* added pane for labels but made map too cluttered
+      map.createPane('labels');
+      map.getPane('labels').style.zIndex = 650;
+      map.getPane('labels').style.pointerEvents = 'none';
 
+    // add CARTO voyager label tiles to lay over data 
+    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager_only_labels/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>',
+      pane: 'labels',
+    }).addTo(map);*/
+
+        // add CARTO voyager tiles with labels
+    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>',
+    }).addTo(map);
     // use D3 fetch to request data with async requests
     const regionsData = d3.json('data/region_building_count.json');
     const colorsData = d3.json('data/vividcolors.json');
