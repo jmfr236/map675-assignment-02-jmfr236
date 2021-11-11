@@ -13,7 +13,7 @@ This map shows historic buildings that are on the National Register of Historic 
 - ogrinfo - shapefile layer details
 - ogr2ogr - projection transformation, converting shapefiles to GeoJSON
 - Mapshaper - geojson layer info, simplify detail of tourism regions, filter NRHP data to Kentucky and show select fields
-- ArcGIS Desktop - Join NRHP point locations with spreadsheet data, spatial join for total building count in each region
+- QGIS - Join NRHP point locations with spreadsheet data, spatial join for total building count in each region
 - Script - color selection
 
 

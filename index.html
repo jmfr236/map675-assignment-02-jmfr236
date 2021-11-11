@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
   <link rel="stylesheet" href="libs/Leaflet.markercluster/MarkerCluster.Default.css"> />
   <link rel="stylesheet" href="libs/Leaflet.markercluster/MarkerCluster.css"> />
-  
+
   <style>
     body {
       font-family: sans-serif;
@@ -25,31 +25,35 @@
     }
 
     #ui {
-        position: absolute;
-        z-index: 1000; /* place above map */
-        bottom: 18px;
-        right: 18px;
-        padding: 6px 12px;
-        background: rgba(256,256,256,.9);
+      position: absolute;
+      z-index: 1000;
+      /* place above map */
+      bottom: 18px;
+      right: 18px;
+      padding: 6px 12px;
+      background: rgba(256, 256, 256, .9);
     }
 
     #ui ul {
-        list-style-type: none;
-        padding: 0;
-    }
-    #ui li {
-        margin-bottom: 6px;
-    }
-    #ui a {
-        text-decoration: none;
-    }
-    #ui a:hover {
-        font-weight: bold;
-    }
-    .highlight {
-        font-weight: bold;
+      list-style-type: none;
+      padding: 0;
     }
 
+    #ui li {
+      margin-bottom: 6px;
+    }
+
+    #ui a {
+      text-decoration: none;
+    }
+
+    #ui a:hover {
+      font-weight: bold;
+    }
+
+    .highlight {
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -69,18 +73,17 @@
   <script src="libs/Leaflet.markercluster/leaflet.markercluster.js"></script>
 
   <script>
-
-      // set map style
-      const options = {
-        center: [38, -85.7],
-        zoom: 8,
-        minZoom: 8,
-        maxZoom: 18,
-        maxBounds: [
-          [39.44, -80.43],
-          [36.53, -90.97]
-        ],
-      };
+    // set map style
+    const options = {
+      center: [38, -85.7],
+      zoom: 8,
+      minZoom: 8,
+      maxZoom: 18,
+      maxBounds: [
+        [39.44, -80.43],
+        [36.53, -90.97]
+      ],
+    };
 
     // instantiate Leaflet map
     const map = L.map('map', options);
@@ -97,11 +100,12 @@
       pane: 'labels',
     }).addTo(map);*/
 
-        // add CARTO voyager tiles with labels
+    // add CARTO voyager tiles with labels
     L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png', {
       maxZoom: 18,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>',
     }).addTo(map);
+
     // use D3 fetch to request data with async requests
     const regionsData = d3.json('data/region_building_count.json');
     const colorsData = d3.json('data/vividcolors.json');
@@ -111,116 +115,115 @@
     Promise.all([regionsData, colorsData, buildingData]).then(drawMap);
 
     function drawMap(data) {
-        // function is called when Promise is fulfilled and data is ready
+      // function is called when Promise is fulfilled and data is ready
 
-        // inspect array of data if you wish
-        console.log(data);
+      // inspect array of data if you wish
+      console.log(data);
 
-        // pull out separate data arrays and assign to variables
-        const regions = data[0];
-        const colors = data[1];
-        const buildings = data[2];
+      // pull out separate data arrays and assign to variables
+      const regions = data[0];
+      const colors = data[1];
+      const buildings = data[2];
 
-        // store a reference to the HTML list
-        const legendList = $('#legend-list');
+      // store a reference to the HTML list
+      const legendList = $('#legend-list');
 
-        // loop through the features and create a new
-        // list item for each feature in the legend
-        for(let i = 1; i <= regions.features.length; i++) {
-            legendList.append('<li class="legend-item" id="region-' + i + '"><a style="color:' + colors.Vivid[10][i -1] + '" href="#">Region ' + i + ' (<span></span>)</a></li>');
-        }
+      // loop through the features and create a new
+      // list item for each feature in the legend
+      for (let i = 1; i <= regions.features.length; i++) {
+        legendList.append('<li class="legend-item" id="region-' + i + '"><a style="color:' + colors.Vivid[10][i - 1] +
+          '" href="#">Region ' + i + ' (<span></span>)</a></li>');
+      }
 
-        // convert GeoJSON to Leaflet L.geoJson() object and add to the map
-        L.geoJson(regions).addTo(map);
-        //L.geoJson(buildings).addTo(map);
+      // convert GeoJSON to Leaflet L.geoJson() object and add to the map
+      L.geoJson(regions).addTo(map);
+      //L.geoJson(buildings).addTo(map);
 
-        // create new markerClusterGroup
-        const markers = L.markerClusterGroup();
+      // create new markerClusterGroup
+      const markers = L.markerClusterGroup();
 
-        // loop through all our signals features
-        buildings.features.forEach(function(feature) {
-          // create a new Leaflet marker for each
-          let coords = feature.geometry.coordinates;
-          let marker = L.marker([coords[1], coords[0]]);
-          
-          // bind a tooltip to the marker
-          marker.bindTooltip("<b>Historic Building: </b>" + feature.properties.NR_Main_Re);
-          
-          // add the marker to the markerClusterGroup
-          markers.addLayer(marker);
+      // loop through all our signals features
+      buildings.features.forEach(function (feature) {
+        // create a new Leaflet marker for each
+        let coords = feature.geometry.coordinates;
+        let marker = L.marker([coords[1], coords[0]]);
 
-        });
-        // add the markerClusterGroup to the map
-        map.addLayer(markers);
+        // bind a tooltip to the marker
+        marker.bindTooltip("<b>Historic Building: </b>" + feature.properties.NR_Main_Re);
 
-        // create a layerGroup with the geojson data
-        const regionsLayer = L.geoJson(regions, {
-          style: function (feature) {
-              // use the colors object to style each polygon a unique color
-            return {
-              color: colors.Vivid[9][feature.properties.OBJECTID - 1],
-              fillOpacity: .6
-            }
-          },
-          
-          onEachFeature(feature, layer) {
-            // select each legend list item span and append the total count of signals
-            $('#region-' + feature.properties.OBJECTID + ' span').append(feature.properties.Join_Count);
+        // add the marker to the markerClusterGroup
+        markers.addLayer(marker);
 
-            //when mousing over a polygon layer
-            layer.on('mouseover', function () {
-              // provide a visual affordance
-              this.setStyle({
-                fillOpacity: .8
-              });
+      });
+      // add the markerClusterGroup to the map
+      map.addLayer(markers);
 
-              // select the cooresponding list item
-              // and add the highlight class to make bold
-              $('#region-' + feature.properties.OBJECTID).addClass('highlight');
-            });
-
-            //when mousing out a polygon layer
-            layer.on('mouseout', function () {
-              // provide a visual affordance
-              this.setStyle({
-                fillOpacity: .6
-              });
-
-              // remove highlight class
-              $('#region-' + feature.properties.OBJECTID).removeClass('highlight');
-            })
-
-            // select all the list items and on mouseover
-            $('.legend-item').on('mouseover', function() {
-                // extract the specific number from the specific item
-                // being moused over
-                var num = this.id.replace('region-', '');
-                // send this number as an argument to the highlightRegion function
-                highlightRegions(num);
-            });
-
-            function highlightRegions(regionsNum) {
-              // loop through the districts polygons
-              regionsLayer.eachLayer(function(layer) {
-                  // if the district id matches the one we're mousing over
-                  if(layer.feature.properties.OBJECTID === regionsNum) {
-                      // change the layer style
-                      layer.setStyle({
-                          fillOpacity: .8
-                      }).bringToFront();
-                  } else {
-                      // return to original
-                      layer.setStyle({
-                          fillOpacity: .6
-                      });
-                  }
-              });
-            }
+      // create a layerGroup with the geojson data
+      const regionsLayer = L.geoJson(regions, {
+        style: function (feature) {
+          // use the colors object to style each polygon a unique color
+          return {
+            color: colors.Vivid[9][feature.properties.OBJECTID - 1],
+            fillOpacity: .6
           }
-        }).addTo(map);
+        },
+
+        onEachFeature(feature, layer) {
+          // select each legend list item span and append the total count of signals
+          $('#region-' + feature.properties.OBJECTID + ' span').append(feature.properties.Join_Count);
+
+          //when mousing over a polygon layer
+          layer.on('mouseover', function () {
+            // provide a visual affordance
+            this.setStyle({
+              fillOpacity: .8
+            });
+
+            // select the cooresponding list item
+            // and add the highlight class to make bold
+            $('#region-' + feature.properties.OBJECTID).addClass('highlight');
+          });
+
+          //when mousing out a polygon layer
+          layer.on('mouseout', function () {
+            // provide a visual affordance
+            this.setStyle({
+              fillOpacity: .6
+            });
+
+            // remove highlight class
+            $('#region-' + feature.properties.OBJECTID).removeClass('highlight');
+          })
+
+          // select all the list items and on mouseover
+          $('.legend-item').on('mouseover', function () {
+            // extract the specific number from the specific item
+            // being moused over
+            var num = this.id.replace('region-', '');
+            // send this number as an argument to the highlightRegion function
+            highlightRegions(num);
+          });
+
+          function highlightRegions(regionNum) {
+            // loop through the regions polygons
+            regionsLayer.eachLayer(function (layer) {
+              // if the region id matches the one we're mousing over
+              if (layer.feature.properties.OBJECTID === regionNum) {
+                // change the layer style
+                layer.setStyle({
+                  fillOpacity: .8
+                }).bringToFront();
+              } else {
+                // return to original
+                layer.setStyle({
+                  fillOpacity: .6
+                });
+              }
+            });
+          }
+        }
+      }).addTo(map);
     }
-
-
   </script>
 </body>
 
