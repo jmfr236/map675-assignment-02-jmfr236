@@ -96,7 +96,7 @@
     const buildingData = d3.json('data/ky_historic_buildings.json')
 
     // use Promise to wait until data is all loaded
-    Promise.all([regionsData, colorsData]).then(drawMap);
+    Promise.all([regionsData, colorsData, buildingData]).then(drawMap);
 
     function drawMap(data) {
         // function is called when Promise is fulfilled and data is ready
@@ -122,11 +122,12 @@
         const regionsLayer = L.geoJson(regions, {
           style: function (feature) {
               // use the colors object to style each polygon a unique color
-              return {
+            return {
               color: colors.Vivid[9][feature.properties.OBJECTID - 1],
               fillOpacity: .6
-              }
+            }
           },
+          
           onEachFeature(feature, layer) {
             // select each legend list item span and append the total count of signals
             $('#region-' + feature.properties.OBJECTID + ' span').append(feature.properties.count);
@@ -141,9 +142,9 @@
               // select the cooresponding list item
               // and add the highlight class to make bold
               $('#region-' + feature.properties.OBJECTID).addClass('highlight');
-            })
+            });
 
-            //when mousing out a polygon layer
+                        //when mousing out a polygon layer
             layer.on('mouseout', function () {
               // provide a visual affordance
               this.setStyle({
@@ -153,6 +154,33 @@
               // remove highlight class
               $('#region-' + feature.properties.OBJECTID).removeClass('highlight');
             })
+
+            // select all the list items and on mouseover
+            $('.legend-item').on('mouseover', function() {
+                // extract the specific number from the specific item
+                // being moused over
+                var num = this.id.replace('region-', '');
+                // send this number as an argument to the highlightRegion function
+                highlightRegion(num);
+            });
+
+            function highlightRegion(regionNum) {
+              // loop through the districts polygons
+              regionsLayer.eachLayer(function(layer) {
+                  // if the district id matches the one we're mousing over
+                  if(layer.feature.properties.OBJECTID === regionNum) {
+                      // change the layer style
+                      layer.setStyle({
+                          fillOpacity: .8
+                      }).bringToFront();
+                  } else {
+                      // return to original
+                      layer.setStyle({
+                          fillOpacity: .6
+                      });
+                  }
+              });
+            }
           }
         }).addTo(map);
     }
